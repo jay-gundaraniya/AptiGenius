@@ -1,6 +1,16 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, BookOpen, User, LogOut, Settings, Bot } from 'lucide-react';
+import {
+    LayoutDashboard,
+    FileText,
+    BookOpen,
+    BarChart3,
+    Sparkles,
+    User,
+    LogOut,
+    Brain,
+    Shield
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
@@ -8,36 +18,39 @@ const Sidebar = () => {
 
     const navItems = [
         { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-        { to: "/tests", icon: BookOpen, label: "My Tests" },
+        { to: "/tests/start", icon: FileText, label: "Take Test" },
+        { to: "/practice", icon: BookOpen, label: "Practice Mode" },
+        { to: "/analytics", icon: BarChart3, label: "Analytics" },
+        { to: "/ai-analysis", icon: Sparkles, label: "AI Analysis" },
         { to: "/profile", icon: User, label: "Profile" },
     ];
 
     if (user?.role === 'admin') {
-        navItems.splice(2, 0, { to: "/admin", icon: Settings, label: "Admin Panel" });
+        navItems.splice(5, 0, { to: "/admin", icon: Shield, label: "Admin Panel" });
     }
 
     return (
-        <aside className="w-64 h-screen bg-white border-r border-slate-200 flex flex-col p-8 fixed left-0 top-0 z-50">
-            <div className="flex items-center gap-3 mb-12">
-                <div className="w-10 h-10 bg-[#4a54a4] text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-lg shadow-indigo-100">
-                    <Bot size={24} fill="currentColor" />
+        <aside className="w-64 h-screen bg-white border-r border-slate-200 flex flex-col p-6 fixed left-0 top-0 z-50">
+            <div className="flex items-center gap-2 mb-10 px-2" onClick={() => window.location.href = '/dashboard'}>
+                <div className="w-8 h-8 bg-indigo-600 text-white rounded-lg flex items-center justify-center">
+                    <Brain size={18} fill="currentColor" />
                 </div>
-                <span className="font-extrabold text-2xl text-slate-900 tracking-tight">AptiGenius</span>
+                <span className="font-bold text-lg text-slate-900 tracking-tight">AptiGenius</span>
             </div>
 
-            <nav className="flex-1 flex flex-col gap-2">
+            <nav className="flex-1 flex flex-col gap-1">
                 {navItems.map((item) => (
                     <NavLink
                         key={item.to}
                         to={item.to}
                         className={({ isActive }) =>
-                            `flex items-center gap-3 py-3 px-4 rounded-xl font-bold transition-all ${isActive
-                                ? 'bg-indigo-50 text-indigo-600 shadow-sm'
-                                : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+                            `flex items-center gap-3 py-2.5 px-3 rounded-lg text-sm font-medium transition-colors ${isActive
+                                ? 'bg-indigo-50 text-indigo-600'
+                                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                             }`
                         }
                     >
-                        <item.icon size={20} />
+                        <item.icon size={18} />
                         <span>{item.label}</span>
                     </NavLink>
                 ))}
@@ -46,9 +59,9 @@ const Sidebar = () => {
             <div className="mt-auto pt-6 border-t border-slate-100">
                 <button
                     onClick={logout}
-                    className="w-full flex items-center gap-3 py-3 px-4 rounded-xl text-red-500 hover:bg-red-50 font-bold transition-all group"
+                    className="w-full flex items-center gap-3 py-2.5 px-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 transition-colors"
                 >
-                    <LogOut size={20} className="group-hover:translate-x-0.5 transition-transform" />
+                    <LogOut size={18} />
                     <span>Logout</span>
                 </button>
             </div>

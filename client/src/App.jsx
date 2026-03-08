@@ -1,29 +1,23 @@
 import React, { useState } from 'react';
-import {
-    AtSign,
-    Key,
-    Eye,
-    EyeOff,
-    ArrowRight,
-    Bot,
-    Chrome,
-    User
-} from 'lucide-react';
-import axios from 'axios';
-
+import { Mail, Lock, User as UserIcon, Brain, ArrowRight } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 
 const App = () => {
     const { login, signup } = useAuth();
     const navigate = useNavigate();
-    const [isLogin, setIsLogin] = useState(true);
-    const [showPassword, setShowPassword] = useState(false);
+    const location = useLocation();
+
+    // Determine initial state based on route or prop if needed, defaulting to login.
+    const [isLogin, setIsLogin] = useState(location.pathname === '/register' ? false : true);
+
+    // Toggle for student/admin
+    const [loginRole, setLoginRole] = useState('student'); // 'student' or 'admin'
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
-    const [agreeTerms, setAgreeTerms] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -35,10 +29,11 @@ const App = () => {
         try {
             if (isLogin) {
                 await login(email, password);
+                navigate('/dashboard');
             } else {
-                await signup({ firstName, lastName, email, password });
+                await signup({ firstName, lastName, email, password, role: loginRole });
+                navigate('/dashboard');
             }
-            navigate('/dashboard');
         } catch (err) {
             setError(err.response?.data?.message || 'Something went wrong');
         } finally {
@@ -47,101 +42,93 @@ const App = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-5 bg-[#f1f5f9]">
-            <div className="flex w-full max-w-[1100px] h-[90vh] max-h-[800px] bg-white rounded-[32px] shadow-2xl overflow-hidden">
-                {/* Left Side */}
-                <div className="flex-1 bg-gradient-to-br from-[#5d69be] to-[#4a54a4] p-10 flex flex-col justify-between text-white relative overflow-hidden">
-                    <div className="relative z-10">
-                        <div className="flex items-center gap-3 text-2xl font-bold mb-5">
-                            <div className="w-9 h-9 bg-white rounded-xl flex items-center justify-center text-[#4a54a4]">
-                                <Bot size={20} fill="currentColor" />
-                            </div>
-                            AptiGenius
-                        </div>
+        <div className="flex min-h-screen bg-white font-main">
+            {/* Left Side (Professional Dark Slate) */}
+            <div className="hidden lg:flex flex-col flex-1 bg-[#1e293b] p-16 text-white relative">
+                <Link to="/" className="flex items-center gap-3 w-fit mb-auto group">
+                    <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
+                        <Brain size={24} color="white" />
+                    </div>
+                    <span className="font-bold text-2xl tracking-tight">AptiGenius</span>
+                </Link>
 
-                        <div className="mt-10 mr-10">
-                            <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-5">
-                                Your AI Sidekick for <span className="text-[#10b981]">Career Success.</span>
-                            </h1>
-                            <p className="text-lg opacity-90 max-w-sm">
-                                Level up your skills with a personalized AI coach designed for the next generation of achievers.
-                            </p>
+                <div className="my-auto max-w-lg">
+                    <div className="w-12 h-1.5 bg-indigo-600 rounded-full mb-8"></div>
+                    <h1 className="text-5xl font-bold mb-6 leading-tight">
+                        {isLogin ? 'Welcome Back to Excellence' : 'Start Your Professional Journey'}
+                    </h1>
+                    <p className="text-slate-400 text-xl leading-relaxed mb-12">
+                        {isLogin
+                            ? 'Continue mastering your aptitude skills with our professional assessment tools.'
+                            : 'Join a community of top candidates optimizing their potential with AI-driven insights.'}
+                    </p>
+
+                    <div className="grid grid-cols-2 gap-8">
+                        <div>
+                            <p className="text-4xl font-bold text-white mb-2">200+</p>
+                            <p className="text-slate-500 text-sm font-semibold uppercase tracking-wider">Curated Tests</p>
+                        </div>
+                        <div>
+                            <p className="text-4xl font-bold text-white mb-2">99%</p>
+                            <p className="text-slate-500 text-sm font-semibold uppercase tracking-wider">Success Rate</p>
                         </div>
                     </div>
-
-                    <div className="relative h-64 flex items-center justify-center z-10">
-                        <div className="opacity-20">
-                            <Bot size={120} strokeWidth={1} />
-                        </div>
-
-                        <div className="absolute top-[10%] right-[15%] bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-2 shadow-xl animate-float-slow transition-transform rotate-12">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="user" className="w-12 h-12 rounded-xl" />
-                        </div>
-
-                        <div className="absolute bottom-[10%] left-[10%] bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-2 shadow-xl animate-float-slow transition-transform -rotate-12">
-                            <div className="flex -space-x-4">
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" alt="user" className="w-12 h-12 rounded-xl border-2 border-white/20" />
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=James" alt="user" className="w-12 h-12 rounded-xl border-2 border-white/20" />
-                            </div>
-                        </div>
-
-                        <div className="absolute bottom-1/4 right-[15%] w-12 h-12 flex items-center justify-center bg-white/15 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl">
-                            <div className="w-5 h-5 flex items-center justify-center">
-                                <ArrowRight size={20} className="rotate-icon" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="flex justify-between items-center text-sm font-semibold z-10">
-                        <div className="flex items-center">
-                            <span className="bg-white/20 py-1 px-2.5 rounded-full mr-2">+2k</span>
-                            Future-ready students
-                        </div>
-                        <div className="tracking-widest opacity-80 uppercase">READY TO SHINE?</div>
-                    </div>
-
-                    {/* Background decorations */}
-                    <div className="absolute -top-24 -left-24 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
-                    <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl"></div>
                 </div>
 
-                {/* Right Side */}
-                <div className="flex-[1.1] p-10 md:p-14 flex flex-col overflow-y-auto bg-white">
-                    <div className="mb-8">
-                        <h2 className="text-3xl font-extrabold text-slate-900 mb-2">{isLogin ? 'Welcome Back!' : 'Create your account'}</h2>
-                        <p className="text-slate-500">{isLogin ? 'Ready to continue your learning journey?' : 'Join our community and start your journey today.'}</p>
-                    </div>
+                <div className="mt-auto pt-8 border-t border-slate-800 text-slate-500 text-sm font-medium">
+                    © 2026 AptiGenius Hub. All rights reserved.
+                </div>
+            </div>
 
-                    <div className="mb-6">
-                        <button className="w-full py-3 px-4 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 flex items-center justify-center gap-3 transition-colors hover:bg-slate-50">
-                            <div className="text-blue-500 flex items-center">
-                                <Chrome size={18} />
-                            </div>
-                            Continue with Google
-                        </button>
-                    </div>
+            {/* Right Side (Form) */}
+            <div className="flex flex-col flex-1 justify-center px-8 sm:px-16 lg:px-24 bg-white relative">
+                <div className="w-full max-w-md mx-auto">
+                    <header className="mb-10 text-center lg:text-left">
+                        <h2 className="text-3xl font-bold text-slate-900 mb-3">
+                            {isLogin ? 'Sign In' : 'Create Account'}
+                        </h2>
+                        <p className="text-slate-500 font-medium">
+                            {isLogin ? 'Enter your credentials to access your dashboard' : 'Fill in the details to get started for free'}
+                        </p>
+                    </header>
 
-                    <div className="flex items-center my-6">
-                        <div className="flex-1 h-px bg-slate-200"></div>
-                        <span className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                            {isLogin ? 'OR USE EMAIL' : 'OR SIGN UP WITH EMAIL'}
-                        </span>
-                        <div className="flex-1 h-px bg-slate-200"></div>
-                    </div>
+                    {error && (
+                        <div className="p-4 bg-red-50 text-red-600 rounded-xl text-sm font-bold mb-8 border border-red-100 flex items-center gap-3">
+                            <div className="w-1.5 h-1.5 bg-red-600 rounded-full"></div>
+                            {error}
+                        </div>
+                    )}
 
-                    {error && <div className="p-3 bg-red-50 text-red-500 rounded-lg text-sm font-semibold mb-4 text-center">{error}</div>}
+                    {isLogin && (
+                        <div className="bg-slate-50 p-1.5 rounded-xl flex mb-8 border border-slate-100">
+                            <button
+                                type="button"
+                                className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all ${loginRole === 'student' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
+                                onClick={() => setLoginRole('student')}
+                            >
+                                Student
+                            </button>
+                            <button
+                                type="button"
+                                className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all ${loginRole === 'admin' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
+                                onClick={() => setLoginRole('admin')}
+                            >
+                                Admin
+                            </button>
+                        </div>
+                    )}
 
-                    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
                         {!isLogin && (
                             <div className="flex gap-4">
                                 <div className="flex-1">
-                                    <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase">First Name</label>
-                                    <div className="relative flex items-center">
-                                        <User className="absolute left-3.5 text-slate-400" size={18} />
+                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">First Name</label>
+                                    <div className="relative group">
+                                        <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-600 transition-colors" size={18} />
                                         <input
                                             type="text"
                                             placeholder="Jane"
-                                            className="w-full py-3 px-4 pl-11 bg-slate-50 border border-slate-200 rounded-xl text-sm transition-all focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 outline-none"
+                                            className="w-full py-3 px-4 pl-12 bg-white border border-slate-200 rounded-xl text-sm transition-all focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 outline-none font-medium"
                                             value={firstName}
                                             onChange={(e) => setFirstName(e.target.value)}
                                             required={!isLogin}
@@ -149,13 +136,13 @@ const App = () => {
                                     </div>
                                 </div>
                                 <div className="flex-1">
-                                    <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase">Last Name</label>
-                                    <div className="relative flex items-center">
-                                        <User className="absolute left-3.5 text-slate-400" size={18} />
+                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Last Name</label>
+                                    <div className="relative group">
+                                        <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-600 transition-colors" size={18} />
                                         <input
                                             type="text"
                                             placeholder="Doe"
-                                            className="w-full py-3 px-4 pl-11 bg-slate-50 border border-slate-200 rounded-xl text-sm transition-all focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 outline-none"
+                                            className="w-full py-3 px-4 pl-12 bg-white border border-slate-200 rounded-xl text-sm transition-all focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 outline-none font-medium"
                                             value={lastName}
                                             onChange={(e) => setLastName(e.target.value)}
                                             required={!isLogin}
@@ -166,13 +153,13 @@ const App = () => {
                         )}
 
                         <div>
-                            <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase">Email Address</label>
-                            <div className="relative flex items-center">
-                                <AtSign className="absolute left-3.5 text-slate-400" size={18} />
+                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Email Address</label>
+                            <div className="relative group">
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-600 transition-colors" size={18} />
                                 <input
                                     type="email"
-                                    placeholder={isLogin ? "hello@youreachiever.com" : "jane@example.com"}
-                                    className="w-full py-3 px-4 pl-11 bg-slate-50 border border-slate-200 rounded-xl text-sm transition-all focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 outline-none"
+                                    placeholder="name@company.com"
+                                    className="w-full py-3 px-4 pl-12 bg-white border border-slate-200 rounded-xl text-sm transition-all focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 outline-none font-medium"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
@@ -181,70 +168,47 @@ const App = () => {
                         </div>
 
                         <div>
-                            <div className="flex justify-between items-center mb-1.5">
-                                <label className="text-xs font-bold text-slate-700 uppercase">Password</label>
+                            <div className="flex justify-between items-center mb-2">
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Password</label>
+                                {isLogin && <button type="button" className="text-xs font-bold text-indigo-600 hover:text-indigo-700">Forgot?</button>}
                             </div>
-                            <div className="relative flex items-center">
-                                <Key className="absolute left-3.5 text-slate-400" size={18} />
+                            <div className="relative group">
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-600 transition-colors" size={18} />
                                 <input
-                                    type={showPassword ? "text" : "password"}
+                                    type="password"
                                     placeholder="••••••••"
-                                    className="w-full py-3 px-4 pl-11 bg-slate-50 border border-slate-200 rounded-xl text-sm transition-all focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 outline-none"
+                                    className="w-full py-3 px-4 pl-12 bg-white border border-slate-200 rounded-xl text-sm transition-all focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 outline-none font-medium"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
+                                    minLength={6}
                                 />
-                                <div className="absolute right-3.5 text-slate-400 cursor-pointer hover:text-indigo-600" onClick={() => setShowPassword(!showPassword)}>
-                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                </div>
                             </div>
-                            {isLogin && (
-                                <div className="mt-2 text-right">
-                                    <a href="#" className="text-xs font-bold text-indigo-600 hover:text-indigo-700 hover:underline">Forgot Password?</a>
-                                </div>
-                            )}
-                            {!isLogin && <p className="text-[10px] text-slate-500 mt-1.5">At least 8 characters with a mix of letters and numbers.</p>}
-                        </div>
-
-                        <div className="my-2">
-                            <label className="flex items-start gap-3 cursor-pointer group">
-                                <input
-                                    type="checkbox"
-                                    className="mt-1 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                                    checked={isLogin ? true : agreeTerms}
-                                    onChange={(e) => !isLogin && setAgreeTerms(e.target.checked)}
-                                />
-                                <span className="text-xs text-slate-500 leading-relaxed font-medium">
-                                    {isLogin ? 'Keep me logged in' : (
-                                        <span>
-                                            By creating an account, you agree to our <a href="#" className="text-indigo-600 font-bold hover:underline">Terms of Service</a> and <a href="#" className="text-indigo-600 font-bold hover:underline">Privacy Policy</a>.
-                                        </span>
-                                    )}
-                                </span>
-                            </label>
                         </div>
 
                         <button
-                            className="w-full py-4 bg-[#4a54a4] text-white rounded-xl text-lg font-bold transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg shadow-indigo-100"
                             type="submit"
-                            disabled={loading || (!isLogin && !agreeTerms)}
+                            disabled={loading}
+                            className="w-full py-4 mt-4 bg-indigo-600 text-white rounded-xl font-bold transition-all hover:bg-indigo-700 disabled:opacity-70 flex justify-center items-center gap-2 shadow-lg shadow-indigo-100 active:scale-[0.98]"
                         >
-                            {loading ? 'Processing...' : (isLogin ? "Let's Go" : "Create Account")}
-                            {isLogin && <ArrowRight size={18} />}
+                            {loading ? 'Authenticating...' : (isLogin ? 'Sign In' : 'Create Account')}
+                            {!loading && <ArrowRight size={20} />}
                         </button>
                     </form>
 
-                    <div className="mt-8 text-center text-sm">
-                        <p className="text-slate-500 font-medium">
-                            {isLogin ? "New to the community?" : "Already have an account?"}{" "}
-                            <a href="#" className="text-emerald-500 font-bold hover:underline" onClick={(e) => { e.preventDefault(); setIsLogin(!isLogin); }}>
-                                {isLogin ? 'Create your account' : 'Sign in'}
-                            </a>
+                    <div className="mt-12 text-center text-sm font-medium">
+                        <p className="text-slate-500 mb-4">
+                            {isLogin ? "New to the platform? " : "Already have an account? "}
+                            <button type="button" className="text-indigo-600 font-bold hover:underline ml-1" onClick={() => setIsLogin(!isLogin)}>
+                                {isLogin ? 'Create Account' : 'Sign In'}
+                            </button>
                         </p>
-                    </div>
-
-                    <div className="mt-auto pt-6 text-[10px] font-bold text-slate-400 text-center tracking-widest uppercase">
-                        PROUDLY BUILT FOR FUTURE ACHIEVERS • TERMS • PRIVACY
+                        <Link to="/" className="text-slate-400 font-bold hover:text-slate-600 flex items-center justify-center gap-1.5 group">
+                            <div className="w-5 h-5 flex items-center justify-center rounded-full bg-slate-50 group-hover:bg-slate-100 transition-colors">
+                                <ArrowRight size={12} className="rotate-180" />
+                            </div>
+                            Return Home
+                        </Link>
                     </div>
                 </div>
             </div>

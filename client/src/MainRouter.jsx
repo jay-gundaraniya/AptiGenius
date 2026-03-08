@@ -7,7 +7,8 @@ import { Toaster } from 'react-hot-toast';
 import Sidebar from './components/Sidebar';
 
 // Pages
-import AppAuth from './App'; // Using existing login/signup
+import LandingPage from './pages/LandingPage';
+import AppAuth from './App'; // Using existing login/signup (App logic updated)
 import Dashboard from './pages/Dashboard';
 import MyTests from './pages/MyTests';
 import StartTest from './pages/StartTest';
@@ -15,6 +16,9 @@ import TestInterface from './pages/TestInterface';
 import ResultPage from './pages/ResultPage';
 import AdminPanel from './pages/AdminPanel';
 import Profile from './pages/Profile';
+import PracticeMode from './pages/PracticeMode';
+import Analytics from './pages/Analytics';
+import AIAnalysis from './pages/AIAnalysis';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
     const { user, loading } = useAuth();
@@ -23,7 +27,7 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
             <div className="w-12 h-12 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
         </div>
     );
-    if (!user) return <Navigate to="/auth" />;
+    if (!user) return <Navigate to="/login" />;
     if (adminOnly && user.role !== 'admin') return <Navigate to="/dashboard" />;
 
     return (
@@ -42,7 +46,9 @@ const MainRouter = () => {
             <Router>
                 <Toaster position="top-right" />
                 <Routes>
-                    <Route path="/auth" element={<AppAuth />} />
+                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/login" element={<AppAuth />} />
+                    <Route path="/register" element={<AppAuth />} />
 
                     <Route path="/dashboard" element={
                         <ProtectedRoute>
@@ -86,7 +92,25 @@ const MainRouter = () => {
                         </ProtectedRoute>
                     } />
 
-                    <Route path="/" element={<Navigate to="/dashboard" />} />
+                    <Route path="/practice" element={
+                        <ProtectedRoute>
+                            <PracticeMode />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/analytics" element={
+                        <ProtectedRoute>
+                            <Analytics />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/ai-analysis" element={
+                        <ProtectedRoute>
+                            <AIAnalysis />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
             </Router>
         </AuthProvider>

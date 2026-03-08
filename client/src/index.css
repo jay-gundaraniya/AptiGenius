@@ -1,17 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #4f46e5;
-  --color-primary-hover: #4338ca;
-  --color-gradient-start: #5d69be;
-  --color-gradient-end: #4a54a4;
+  --color-primary: #6366f1;
+  --color-primary-hover: #4f46e5;
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-900: #0f172a;
 
-  --font-main: "Outfit", sans-serif;
+  --font-main: "Inter", sans-serif;
 }
 
 @layer base {
   body {
-    @apply font-main bg-[#f1f5f9] text-[#0f172a] min-h-screen;
+    @apply font-main bg-[#F8F9FC] text-[#1e293b] min-h-screen antialiased;
   }
 }
 
@@ -60,6 +63,7 @@
   animation: float 6s ease-in-out infinite;
 }
 
+/* Removed older custom animations for cleaner styles */
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;
@@ -71,4 +75,113 @@
 
 ::-webkit-scrollbar-thumb {
   @apply bg-slate-200 rounded-full hover:bg-slate-300;
+}
+
+/* Landing Page Styles */
+.landing-page {
+  @apply min-h-screen bg-white flex flex-col font-main overflow-x-hidden;
+}
+
+.landing-nav {
+  @apply w-full max-w-7xl mx-auto px-8 py-6 flex items-center justify-between z-20 sticky top-0 bg-white/80 backdrop-blur-xl border-b border-slate-100;
+}
+
+.landing-logo {
+  @apply flex items-center gap-2;
+}
+
+.landing-logo-icon {
+  @apply w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center text-white;
+}
+
+.landing-logo-text {
+  @apply font-bold text-xl text-slate-900 tracking-tight;
+}
+
+.landing-nav-actions {
+  @apply flex items-center gap-6;
+}
+
+.landing-nav-login {
+  @apply text-slate-600 font-semibold hover:text-indigo-600 transition-colors text-sm;
+}
+
+.landing-nav-cta {
+  @apply bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-indigo-100;
+}
+
+.landing-hero {
+  @apply w-full flex flex-col items-center text-center pt-32 pb-40 px-6 bg-white relative;
+}
+
+.landing-hero-badge {
+  @apply flex items-center gap-2 bg-indigo-50 border border-indigo-100 px-4 py-1.5 rounded-full text-indigo-600 text-[11px] font-bold uppercase tracking-wider mb-8;
+}
+
+.landing-hero-title {
+  @apply text-5xl md:text-7xl font-bold tracking-tight max-w-5xl mx-auto leading-[1.1] mb-8 text-slate-900;
+}
+
+.landing-hero-gradient {
+  @apply text-indigo-600;
+}
+
+.landing-hero-subtitle {
+  @apply text-slate-500 max-w-2xl mx-auto text-lg md:text-xl font-medium leading-relaxed mb-12;
+}
+
+.landing-hero-actions {
+  @apply flex flex-col sm:flex-row items-center gap-6;
+}
+
+.landing-btn-primary {
+  @apply flex items-center gap-2 bg-indigo-600 text-white hover:bg-indigo-700 px-10 py-4 rounded-xl font-bold transition-all w-full sm:w-auto shadow-xl shadow-indigo-100 active:scale-95;
+}
+
+.landing-btn-secondary {
+  @apply flex items-center gap-2 bg-white text-slate-600 hover:text-slate-900 border border-slate-200 px-10 py-4 rounded-xl font-bold transition-all w-full sm:w-auto hover:bg-slate-50;
+}
+
+.landing-features {
+  @apply w-full bg-slate-50 py-32 px-6 border-y border-slate-100;
+}
+
+.landing-features-inner {
+  @apply max-w-7xl mx-auto flex flex-col items-center;
+}
+
+.landing-features-title {
+  @apply text-4xl md:text-5xl font-bold text-slate-900 mb-6 text-center tracking-tight;
+}
+
+.landing-features-subtitle {
+  @apply text-slate-500 text-center max-w-2xl mx-auto mb-20 text-lg font-medium;
+}
+
+.landing-features-highlight {
+  @apply text-indigo-600 font-bold;
+}
+
+.landing-features-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full;
+}
+
+.landing-feature-card {
+  @apply bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:border-indigo-200 transition-all hover:-translate-y-1;
+}
+
+.landing-feature-icon {
+  @apply w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-8;
+}
+
+.landing-feature-title {
+  @apply text-xl font-bold text-slate-900 mb-4;
+}
+
+.landing-feature-desc {
+  @apply text-slate-500 text-sm leading-relaxed font-medium;
+}
+
+.landing-footer {
+  @apply text-center py-12 text-slate-400 text-sm w-full mt-auto bg-white font-medium;
 }
