@@ -85,6 +85,16 @@ const MainRouter = () => {
                             <AdminPanel />
                         </ProtectedRoute>
                     } />
+                    <Route path="/admin/questions" element={
+                        <ProtectedRoute adminOnly>
+                            <AdminPanel key="questions" defaultTab="questions" />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/admin/students" element={
+                        <ProtectedRoute adminOnly>
+                            <AdminPanel key="students" defaultTab="students" />
+                        </ProtectedRoute>
+                    } />
 
                     <Route path="/profile" element={
                         <ProtectedRoute>

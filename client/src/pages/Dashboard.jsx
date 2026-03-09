@@ -64,8 +64,12 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchStats();
-    }, []);
+        if (user?.role === 'admin') {
+            navigate('/admin');
+        } else {
+            fetchStats();
+        }
+    }, [user, navigate]);
 
     const fetchStats = async () => {
         try {

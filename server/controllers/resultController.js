@@ -1,5 +1,6 @@
 const Result = require('../models/Result');
 const Question = require('../models/Question');
+const User = require('../models/User');
 
 exports.submitResult = async (req, res) => {
     try {
@@ -124,22 +125,68 @@ exports.getAdminOverview = async (req, res) => {
     try {
         const totalQuestions = await Question.countDocuments();
         const totalResults = await Result.countDocuments();
-        const User = require('../models/User');
-        const totalStudents = await User.countDocuments({ role: 'student' });
+        const students = await User.find({ role: 'student' });
+        const results = await Result.find();
 
-        // Calculate average score
-        const avgScoreResult = await Result.aggregate([
-            { $group: { _id: null, avgScore: { $avg: '$accuracy' } } }
-        ]);
-        const avgScore = avgScoreResult.length > 0 ? Math.round(avgScoreResult[0].avgScore) : 0;
+        // 1. Weekly Activity (Mon - Sun)
+        const weeklyActivity = [0, 0, 0, 0, 0, 0, 0];
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-        res.json({
-            totalStudents,
+        results.forEach(r => {
+            const date = new Date(r.createdAt);
+            let dayIndex = date.getDay() - 1; // 0 is Monday, -1 is Sunday
+            if (dayIndex === -1) dayIndex = 6;
+            weeklyActivity[dayIndex]++;
+        });
+
+        // 2. Readiness Distribution
+        const distribution = { High: 0, Medium: 0, Low: 0 };
+        students.forEach(student => {
+            const studentResults = results.filter(r => r.userId?.toString() === student._id.toString());
+            const testCount = studentResults.length;
+            if (testCount === 0) {
+                distribution.Low++;
+                return;
+            }
+            const avgScore = studentResults.reduce((acc, r) => acc + (r.accuracy || 0), 0) / testCount;
+            let readinessScore = Math.min(avgScore * 0.4, 40) + Math.min(testCount * 2, 20) + 10;
+            if (readinessScore >= 60) distribution.High++;
+            else if (readinessScore >= 35) distribution.Medium++;
+            else distribution.Low++;
+        });
+
+        // 3. Weakest Topic
+        const topicStats = {};
+        results.forEach(r => {
+            const category = r.category || 'Quantitative';
+            if (!topicStats[category]) topicStats[category] = { total: 0, count: 0 };
+            topicStats[category].total += r.accuracy;
+            topicStats[category].count++;
+        });
+
+        let weakest = { name: 'N/A', accuracy: 0 };
+        let minAcc = 101;
+        Object.keys(topicStats).forEach(cat => {
+            const avg = Math.round(topicStats[cat].total / topicStats[cat].count);
+            if (avg < minAcc) {
+                minAcc = avg;
+                weakest = { name: cat, accuracy: avg };
+            }
+        });
+
+        const overviewData = {
+            totalStudents: students.length,
             totalQuestions,
             totalResults,
-            avgScore
-        });
+            weakestTopic: weakest,
+            weeklyActivity,
+            distribution
+        };
+
+        console.log('Sending Admin Overview:', overviewData);
+        res.json(overviewData);
     } catch (error) {
+        console.error('getAdminOverview Error:', error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -150,7 +197,7 @@ exports.getAIReadiness = async (req, res) => {
         console.log('AI Readiness - User ID:', req.user?._id);
         const results = await Result.find({ userId: req.user._id }).sort({ createdAt: -1 });
         console.log('AI Readiness - Results found:', results.length);
-        
+
         if (results.length === 0) {
             return res.json({
                 readinessLevel: 'Low',
@@ -255,5 +302,61 @@ exports.getAIReadiness = async (req, res) => {
     } catch (error) {
         console.error('AI Readiness Error:', error);
         res.status(500).json({ message: error.message, error: error.toString() });
+    }
+};
+
+exports.getAllStudentsStats = async (req, res) => {
+    try {
+        const User = require('../models/User');
+        const students = await User.find({ role: 'student' }).select('-password');
+        const results = await Result.find().sort({ createdAt: -1 });
+
+        const studentStats = students.map(student => {
+            const studentResults = results.filter(r => r.userId?.toString() === student._id.toString());
+            const testCount = studentResults.length;
+
+            if (testCount === 0) {
+                return {
+                    ...student.toObject(),
+                    testCount: 0,
+                    avgScore: 0,
+                    readinessLevel: 'Low',
+                    status: 'Active' // Mock status for now as per image
+                };
+            }
+
+            const avgScore = Math.round(studentResults.reduce((acc, r) => acc + (r.accuracy || 0), 0) / testCount);
+
+            // Calculate readiness (simplified logic from getAIReadiness)
+            let readinessScore = 0;
+            readinessScore += Math.min(avgScore * 0.4, 40);
+            readinessScore += Math.min(testCount * 2, 20);
+
+            // Improvement trend
+            let improvementTrend = 'neutral';
+            if (studentResults.length >= 3) {
+                const recent = studentResults.slice(0, 3).reduce((acc, r) => acc + (r.accuracy || 0), 0) / 3;
+                const older = studentResults.slice(-3).reduce((acc, r) => acc + (r.accuracy || 0), 0) / Math.min(3, studentResults.length);
+                if (recent > older + 5) improvementTrend = 'improving';
+                else if (recent < older - 5) improvementTrend = 'declining';
+            }
+            readinessScore += improvementTrend === 'improving' ? 20 : (improvementTrend === 'neutral' ? 10 : 5);
+
+            let readinessLevel = 'Low';
+            if (readinessScore >= 60) readinessLevel = 'High';
+            else if (readinessScore >= 35) readinessLevel = 'Medium';
+
+            return {
+                ...student.toObject(),
+                testCount,
+                avgScore,
+                readinessLevel,
+                status: 'Active'
+            };
+        });
+
+        res.json(studentStats);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };

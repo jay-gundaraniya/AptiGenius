@@ -9,5 +9,6 @@ router.get('/stats', auth, resultController.getStats);
 router.get('/ai-readiness', auth, resultController.getAIReadiness);
 router.get('/all', auth, admin, resultController.getAllResults);
 router.get('/overview', auth, admin, resultController.getAdminOverview);
+router.get('/students-stats', auth, admin, resultController.getAllStudentsStats);
 
 module.exports = router;

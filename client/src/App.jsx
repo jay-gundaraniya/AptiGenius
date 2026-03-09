@@ -28,11 +28,11 @@ const App = () => {
 
         try {
             if (isLogin) {
-                await login(email, password);
-                navigate('/dashboard');
+                const data = await login(email, password);
+                navigate(data.user.role === 'admin' ? '/admin' : '/dashboard');
             } else {
-                await signup({ firstName, lastName, email, password, role: loginRole });
-                navigate('/dashboard');
+                const data = await signup({ firstName, lastName, email, password, role: loginRole });
+                navigate(data.user.role === 'admin' ? '/admin' : '/dashboard');
             }
         } catch (err) {
             setError(err.response?.data?.message || 'Something went wrong');

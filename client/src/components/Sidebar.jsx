@@ -1,5 +1,4 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 import {
     LayoutDashboard,
     FileText,
@@ -7,6 +6,7 @@ import {
     BarChart3,
     Sparkles,
     User,
+    UserCircle,
     LogOut,
     Brain,
     Shield,
@@ -16,24 +16,31 @@ import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
 
-    const navItems = [
-        { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-        { to: "/tests/start", icon: FileText, label: "Take Test" },
-        { to: "/tests", icon: History, label: "My Tests" },
-        { to: "/practice", icon: BookOpen, label: "Practice Mode" },
-        { to: "/analytics", icon: BarChart3, label: "Analytics" },
-        { to: "/ai-analysis", icon: Sparkles, label: "AI Analysis" },
-        { to: "/profile", icon: User, label: "Profile" },
-    ];
-
-    if (user?.role === 'admin') {
-        navItems.splice(6, 0, { to: "/admin", icon: Shield, label: "Admin Panel" });
-    }
+    const navItems = user?.role === 'admin'
+        ? [
+            { to: "/admin", icon: LayoutDashboard, label: "Admin Panel" },
+            { to: "/admin/questions", icon: BookOpen, label: "Questions" },
+            { to: "/admin/students", icon: User, label: "Students" },
+            { to: "/profile", icon: UserCircle, label: "Profile" },
+        ]
+        : [
+            { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+            { to: "/tests/start", icon: FileText, label: "Take Test" },
+            { to: "/tests", icon: History, label: "My Tests" },
+            { to: "/practice", icon: BookOpen, label: "Practice Mode" },
+            { to: "/analytics", icon: BarChart3, label: "Analytics" },
+            { to: "/ai-analysis", icon: Sparkles, label: "AI Analysis" },
+            { to: "/profile", icon: UserCircle, label: "Profile" },
+        ];
 
     return (
         <aside className="w-64 h-screen bg-white border-r border-slate-200 flex flex-col p-6 fixed left-0 top-0 z-50">
-            <div className="flex items-center gap-2 mb-10 px-2" onClick={() => window.location.href = '/dashboard'}>
+            <div
+                className="flex items-center gap-2 mb-10 px-2 cursor-pointer transition-opacity hover:opacity-80"
+                onClick={() => navigate(user?.role === 'admin' ? '/admin' : '/dashboard')}
+            >
                 <div className="w-8 h-8 bg-indigo-600 text-white rounded-lg flex items-center justify-center">
                     <Brain size={18} fill="currentColor" />
                 </div>
@@ -45,6 +52,7 @@ const Sidebar = () => {
                     <NavLink
                         key={item.to}
                         to={item.to}
+                        end={item.to === '/admin'}
                         className={({ isActive }) =>
                             `flex items-center gap-3 py-2.5 px-3 rounded-lg text-sm font-medium transition-colors ${isActive
                                 ? 'bg-indigo-50 text-indigo-600'

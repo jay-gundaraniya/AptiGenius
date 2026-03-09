@@ -9,7 +9,7 @@ const LandingPage = () => {
 
     const handleStartPracticing = () => {
         if (user) {
-            navigate('/dashboard');
+            navigate(user.role === 'admin' ? '/admin' : '/dashboard');
         } else {
             navigate('/register');
         }
