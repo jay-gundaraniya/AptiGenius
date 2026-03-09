@@ -77,6 +77,10 @@ const TestInterface = () => {
         });
 
         score = (correctCount / questions.length) * 100;
+        
+        // Calculate time taken
+        const totalTime = parseInt(params.get('limit') || 20) * 90;
+        const timeTaken = totalTime - timeLeft;
 
         try {
             const res = await axios.post('/api/results/submit', {
@@ -84,7 +88,8 @@ const TestInterface = () => {
                 totalQuestions: questions.length,
                 correctAnswers: correctCount,
                 category: params.get('category'),
-                difficulty: params.get('difficulty')
+                difficulty: params.get('difficulty'),
+                timeTaken
             });
             toast.success("Test submitted successfully.");
             navigate(`/tests/result/${res.data._id}`);

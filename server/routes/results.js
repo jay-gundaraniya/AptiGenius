@@ -6,6 +6,7 @@ const { auth, admin } = require('../middleware/auth');
 router.post('/submit', auth, resultController.submitResult);
 router.get('/my-results', auth, resultController.getUserResults);
 router.get('/stats', auth, resultController.getStats);
+router.get('/ai-readiness', auth, resultController.getAIReadiness);
 router.get('/all', auth, admin, resultController.getAllResults);
 router.get('/overview', auth, admin, resultController.getAdminOverview);
 

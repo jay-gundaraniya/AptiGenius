@@ -31,6 +31,7 @@ const PracticeMode = () => {
     const [selectedOption, setSelectedOption] = useState(null);
     const [showFeedback, setShowFeedback] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [score, setScore] = useState({ correct: 0, total: 0 });
 
     const categories = [
         { id: 'Quantitative', label: 'Quantitative Aptitude' },

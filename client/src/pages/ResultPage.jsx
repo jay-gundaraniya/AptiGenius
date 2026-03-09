@@ -16,7 +16,9 @@ import {
     Search,
     Bell,
     Share2,
-    Download
+    Download,
+    Clock,
+    XCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
@@ -89,11 +91,17 @@ const ResultPage = () => {
                             {lvl.desc}
                         </p>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full py-10 border-t border-slate-50">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full py-10 border-t border-slate-50">
                             <div className="p-6 bg-slate-50 rounded-3xl border border-transparent hover:border-slate-100 transition-all">
                                 <Target size={24} className="text-indigo-600 mx-auto mb-4" />
                                 <div className="text-2xl font-bold text-slate-900">{result.correctAnswers}/{result.totalQuestions}</div>
                                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Correct Answers</div>
+                            </div>
+
+                            <div className="p-6 bg-slate-50 rounded-3xl border border-transparent hover:border-slate-100 transition-all">
+                                <XCircle size={24} className="text-red-500 mx-auto mb-4" />
+                                <div className="text-2xl font-bold text-slate-900">{result.wrongAnswers || (result.totalQuestions - result.correctAnswers)}</div>
+                                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Wrong Answers</div>
                             </div>
 
                             <div className="p-6 bg-slate-50 rounded-3xl border border-transparent hover:border-slate-100 transition-all">
@@ -103,9 +111,11 @@ const ResultPage = () => {
                             </div>
 
                             <div className="p-6 bg-slate-50 rounded-3xl border border-transparent hover:border-slate-100 transition-all">
-                                <Zap size={24} className="text-amber-500 mx-auto mb-4" />
-                                <div className="text-2xl font-bold text-slate-900 truncate px-2">{result.category}</div>
-                                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Subject Area</div>
+                                <Clock size={24} className="text-amber-500 mx-auto mb-4" />
+                                <div className="text-2xl font-bold text-slate-900">
+                                    {result.timeTaken ? `${Math.floor(result.timeTaken / 60)}m ${result.timeTaken % 60}s` : 'N/A'}
+                                </div>
+                                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Time Taken</div>
                             </div>
                         </div>
                     </div>

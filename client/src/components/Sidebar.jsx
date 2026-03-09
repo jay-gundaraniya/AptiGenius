@@ -9,7 +9,8 @@ import {
     User,
     LogOut,
     Brain,
-    Shield
+    Shield,
+    History
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -19,6 +20,7 @@ const Sidebar = () => {
     const navItems = [
         { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
         { to: "/tests/start", icon: FileText, label: "Take Test" },
+        { to: "/tests", icon: History, label: "My Tests" },
         { to: "/practice", icon: BookOpen, label: "Practice Mode" },
         { to: "/analytics", icon: BarChart3, label: "Analytics" },
         { to: "/ai-analysis", icon: Sparkles, label: "AI Analysis" },
@@ -26,7 +28,7 @@ const Sidebar = () => {
     ];
 
     if (user?.role === 'admin') {
-        navItems.splice(5, 0, { to: "/admin", icon: Shield, label: "Admin Panel" });
+        navItems.splice(6, 0, { to: "/admin", icon: Shield, label: "Admin Panel" });
     }
 
     return (

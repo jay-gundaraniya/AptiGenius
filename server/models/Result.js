@@ -18,12 +18,20 @@ const resultSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    wrongAnswers: {
+        type: Number,
+        required: true
+    },
     accuracy: {
         type: Number,
         required: true
     },
     category: String,
-    difficulty: String
+    difficulty: String,
+    timeTaken: {
+        type: Number, // in seconds
+        default: 0
+    }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Result', resultSchema);
